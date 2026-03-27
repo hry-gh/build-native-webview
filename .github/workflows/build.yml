@@ -85,6 +85,12 @@ jobs:
             --helper-bin ${{ matrix.helper-bin }} \
             --target-dir ${CARGO_TARGET_DIR:-RobustToolbox/native/target}
 
+      - name: Strip binaries (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          find artifact/ -name '*.so' -exec strip --strip-debug {} +
+          strip --strip-debug artifact/*/native/Robust.Client.WebView || true
+
       - name: Upload platform artifact
         uses: actions/upload-artifact@v4
         with:
