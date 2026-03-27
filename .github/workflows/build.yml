@@ -53,21 +53,22 @@ jobs:
         with:
           targets: ${{ matrix.triple }}
 
+      # Windows: use short target dir to avoid MSVC path length issues
+      - name: Set short target dir (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: echo "CARGO_TARGET_DIR=C:/ct" >> $GITHUB_ENV
+
       - name: Cache cargo registry & build
         uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            RobustToolbox/native/target
+            ${{ runner.os == 'Windows' && 'C:/ct' || 'RobustToolbox/native/target' }}
           key: cargo-${{ matrix.rid }}-${{ hashFiles('RobustToolbox/native/Cargo.lock') }}
           restore-keys: |
             cargo-${{ matrix.rid }}-
-
-      - name: Set short target dir (Windows)
-        if: runner.os == 'Windows'
-        shell: bash
-        run: echo "CARGO_TARGET_DIR=C:/ct" >> $GITHUB_ENV
 
       - name: Build native libraries
         working-directory: RobustToolbox/native
