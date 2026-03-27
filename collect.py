@@ -56,13 +56,22 @@ def main():
     out = args.output / args.rid / "native"
     out.mkdir(parents=True, exist_ok=True)
 
-    for name in [args.webview_lib, args.helper_bin]:
-        src = release_dir / name
-        if src.exists():
-            shutil.copy2(src, out / name)
-            print(f"Copied {name}")
-        else:
-            raise FileNotFoundError(f"{src} not found")
+    # Copy webview library
+    src = release_dir / args.webview_lib
+    if src.exists():
+        shutil.copy2(src, out / args.webview_lib)
+        print(f"Copied {args.webview_lib}")
+    else:
+        raise FileNotFoundError(f"{src} not found")
+
+    # Copy cef-helper, renamed to Robust.Client.WebView for launcher compatibility
+    src = release_dir / args.helper_bin
+    if src.exists():
+        dest_name = "Robust.Client.WebView.exe" if args.rid.startswith("win") else "Robust.Client.WebView"
+        shutil.copy2(src, out / dest_name)
+        print(f"Copied {args.helper_bin} -> {dest_name}")
+    else:
+        raise FileNotFoundError(f"{src} not found")
 
     cef_platform = CEF_PLATFORM_MAP[args.rid]
     cef_dir = find_cef_dir(release_dir, cef_platform)
