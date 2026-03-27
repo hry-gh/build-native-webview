@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Harry.Robust.Natives.Cef.linux-x64</PackageId>
-    <PackageVersion>146.0.8</PackageVersion>
+    <PackageVersion>146.0.9</PackageVersion>
     <Authors>Space Wizards</Authors>
     <Description>Native CEF binaries for Linux x64 — part of Harry.Robust.Natives.Cef</Description>
     <NoBuild>true</NoBuild>

@@ -8,14 +8,14 @@
 
   <!-- Windows x64 -->
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' Or ('$(RuntimeIdentifier)' == '' And '$([MSBuild]::IsOSPlatform(Windows))' == 'true')">
-    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.win-x64\146.0.8\runtimes\win-x64\native\**\*"
+    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.win-x64\146.0.9\runtimes\win-x64\native\**\*"
           CopyToOutputDirectory="PreserveNewest"
           Link="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!-- Linux x64 -->
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64' Or ('$(RuntimeIdentifier)' == '' And '$([MSBuild]::IsOSPlatform(Linux))' == 'true')">
-    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.linux-x64\146.0.8\runtimes\linux-x64\native\**\*"
+    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.linux-x64\146.0.9\runtimes\linux-x64\native\**\*"
           CopyToOutputDirectory="PreserveNewest"
           Link="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
@@ -30,25 +30,25 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(_RnwMacRid)' != ''">
-    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.8\runtimes\$(_RnwMacRid)\native\Chromium Embedded Framework.framework\**\*"
+    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.9\runtimes\$(_RnwMacRid)\native\Chromium Embedded Framework.framework\**\*"
           CopyToOutputDirectory="PreserveNewest"
           Link="..\Frameworks\Chromium Embedded Framework.framework\%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.8\runtimes\$(_RnwMacRid)\native\Robust.Client.WebView"
+    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.9\runtimes\$(_RnwMacRid)\native\Robust.Client.WebView"
           CopyToOutputDirectory="PreserveNewest"
           Link="Robust.Client.WebView" />
-    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.8\runtimes\$(_RnwMacRid)\native\librobust_native_webview.dylib"
+    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.9\runtimes\$(_RnwMacRid)\native\librobust_native_webview.dylib"
           CopyToOutputDirectory="PreserveNewest"
           Link="librobust_native_webview.dylib" />
-    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.8\runtimes\$(_RnwMacRid)\native\libEGL.dylib"
+    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.9\runtimes\$(_RnwMacRid)\native\libEGL.dylib"
           CopyToOutputDirectory="PreserveNewest"
           Link="libEGL.dylib" />
-    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.8\runtimes\$(_RnwMacRid)\native\libGLESv2.dylib"
+    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.9\runtimes\$(_RnwMacRid)\native\libGLESv2.dylib"
           CopyToOutputDirectory="PreserveNewest"
           Link="libGLESv2.dylib" />
-    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.8\runtimes\$(_RnwMacRid)\native\libvk_swiftshader.dylib"
+    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.9\runtimes\$(_RnwMacRid)\native\libvk_swiftshader.dylib"
           CopyToOutputDirectory="PreserveNewest"
           Link="libvk_swiftshader.dylib" />
-    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.8\runtimes\$(_RnwMacRid)\native\vk_swiftshader_icd.json"
+    <None Include="$(NuGetPackageRoot)harry.robust.natives.cef.$(_RnwMacRid)\146.0.9\runtimes\$(_RnwMacRid)\native\vk_swiftshader_icd.json"
           CopyToOutputDirectory="PreserveNewest"
           Link="vk_swiftshader_icd.json" />
   </ItemGroup>

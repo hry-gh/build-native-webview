@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Harry.Robust.Natives.Cef</PackageId>
-    <PackageVersion>146.0.8</PackageVersion>
+    <PackageVersion>146.0.9</PackageVersion>
     <Authors>Space Wizards</Authors>
     <Description>Native CEF binaries and Rust webview interop for RobustToolbox. Meta-package that pulls in the correct platform-specific package.</Description>
     <NoBuild>true</NoBuild>
@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Harry.Robust.Natives.Cef.win-x64" Version="146.0.8" />
-    <PackageReference Include="Harry.Robust.Natives.Cef.linux-x64" Version="146.0.8" />
-    <PackageReference Include="Harry.Robust.Natives.Cef.osx-arm64" Version="146.0.8" />
-    <PackageReference Include="Harry.Robust.Natives.Cef.osx-x64" Version="146.0.8" />
+    <PackageReference Include="Harry.Robust.Natives.Cef.win-x64" Version="146.0.9" />
+    <PackageReference Include="Harry.Robust.Natives.Cef.linux-x64" Version="146.0.9" />
+    <PackageReference Include="Harry.Robust.Natives.Cef.osx-arm64" Version="146.0.9" />
+    <PackageReference Include="Harry.Robust.Natives.Cef.osx-x64" Version="146.0.9" />
   </ItemGroup>
 </Project>
