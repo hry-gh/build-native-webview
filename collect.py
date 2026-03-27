@@ -30,6 +30,15 @@ MACOS_FLAT_LIBS = [
 ]
 
 
+def copy_locale(cef_dir: Path, out: Path):
+    locale_src = cef_dir / "locales" / "en-US.pak"
+    if locale_src.exists():
+        locale_dst = out / "locales"
+        locale_dst.mkdir(exist_ok=True)
+        shutil.copy2(locale_src, locale_dst / "en-US.pak")
+        print("Copied locales/en-US.pak")
+
+
 def find_cef_dir(release_dir: Path, cef_platform: str) -> Path | None:
     build_dir = release_dir / "build"
     if not build_dir.exists():
@@ -82,8 +91,13 @@ def main():
 
     if args.rid.startswith("osx"):
         fw_src = cef_dir / "Chromium Embedded Framework.framework"
-        shutil.copytree(fw_src, out / "Chromium Embedded Framework.framework", symlinks=True)
-        print("Copied framework bundle")
+        fw_dst = out / "Chromium Embedded Framework.framework"
+        shutil.copytree(fw_src, fw_dst, symlinks=True,
+                        ignore=shutil.ignore_patterns("*.lproj"))
+        en_lproj = fw_src / "Resources" / "en.lproj"
+        if en_lproj.exists():
+            shutil.copytree(en_lproj, fw_dst / "Resources" / "en.lproj", symlinks=True)
+        print("Copied framework bundle (en locale only)")
 
         for lib in MACOS_FLAT_LIBS:
             src = fw_src / "Libraries" / lib
@@ -96,20 +110,14 @@ def main():
             src = cef_dir / f
             if src.exists():
                 shutil.copy2(src, out / f)
-        locales_src = cef_dir / "locales"
-        if locales_src.exists():
-            shutil.copytree(locales_src, out / "locales")
-            print("Copied locales/")
+        copy_locale(cef_dir, out)
 
     elif args.rid.startswith("linux"):
         for f in CEF_FILES_LINUX:
             src = cef_dir / f
             if src.exists():
                 shutil.copy2(src, out / f)
-        locales_src = cef_dir / "locales"
-        if locales_src.exists():
-            shutil.copytree(locales_src, out / "locales")
-            print("Copied locales/")
+        copy_locale(cef_dir, out)
 
     print(f"Done collecting {args.rid}")
 

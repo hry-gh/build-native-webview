@@ -106,46 +106,53 @@ jobs:
           path: artifacts/
           pattern: runtime-*
 
-      - name: Assemble runtimes directory
+      - name: Assemble runtimes into sub-packages
         run: |
-          rm -rf nuget/runtimes
-          mkdir -p nuget/runtimes
-
           for dir in artifacts/runtime-*; do
             rid=$(basename "$dir" | sed 's/^runtime-//')
+            dest="nuget/$rid/runtimes/$rid/native"
+            rm -rf "nuget/$rid/runtimes"
+            mkdir -p "$dest"
             echo "Copying $rid..."
-            cp -a "$dir/$rid" "nuget/runtimes/$rid"
+            cp -a "$dir/$rid/native/"* "$dest/"
           done
 
-          echo "Runtimes layout:"
-          find nuget/runtimes -maxdepth 3 -type f | head -40
+          echo "Layout:"
+          for rid in win-x64 linux-x64 osx-arm64 osx-x64; do
+            echo "--- $rid ---"
+            find "nuget/$rid/runtimes" -maxdepth 3 -type f | head -20
+          done
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
 
-      - name: Pack NuGet package
-        working-directory: nuget
+      - name: Pack all NuGet packages
         run: |
-          dotnet pack -o out
-          echo "Package created:"
+          mkdir -p out
+          for proj in nuget/win-x64/*.csproj nuget/linux-x64/*.csproj nuget/osx-arm64/*.csproj nuget/osx-x64/*.csproj nuget/meta/*.csproj; do
+            echo "Packing $proj..."
+            dotnet pack "$proj" -o out
+          done
+          echo "Packages created:"
           ls -la out/*.nupkg
 
-      - name: Upload NuGet package
+      - name: Upload NuGet packages
         uses: actions/upload-artifact@v4
         with:
-          name: nuget-package
-          path: nuget/out/*.nupkg
+          name: nuget-packages
+          path: out/*.nupkg
           retention-days: 30
 
       - name: Publish to NuGet.org
         if: env.NUGET_API_KEY != ''
-        working-directory: nuget/out
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
-          dotnet nuget push *.nupkg \
-            --api-key "$NUGET_API_KEY" \
-            --source https://api.nuget.org/v3/index.json \
-            --skip-duplicate
+          for pkg in out/*.nupkg; do
+            dotnet nuget push "$pkg" \
+              --api-key "$NUGET_API_KEY" \
+              --source https://api.nuget.org/v3/index.json \
+              --skip-duplicate
+          done

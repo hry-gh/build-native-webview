@@ -1,4 +1,4 @@
-runtimes/
-out/
-obj/
-bin/
+*/runtimes/
+*/out/
+*/obj/
+*/bin/
