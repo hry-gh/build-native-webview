@@ -24,12 +24,12 @@ jobs:
             webview-lib: librobust_native_webview.so
             helper-bin: cef-helper
           - rid: osx-arm64
-            os: macos-14
+            os: macos-26
             triple: aarch64-apple-darwin
             webview-lib: librobust_native_webview.dylib
             helper-bin: cef-helper
           - rid: osx-x64
-            os: macos-13
+            os: macos-26-intel
             triple: x86_64-apple-darwin
             webview-lib: librobust_native_webview.dylib
             helper-bin: cef-helper
