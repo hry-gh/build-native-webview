@@ -132,10 +132,17 @@ jobs:
       - name: Pack all NuGet packages
         run: |
           mkdir -p out
-          for proj in nuget/win-x64/*.csproj nuget/linux-x64/*.csproj nuget/osx-arm64/*.csproj nuget/osx-x64/*.csproj nuget/meta/*.csproj; do
+
+          for proj in nuget/win-x64/*.csproj nuget/linux-x64/*.csproj nuget/osx-arm64/*.csproj nuget/osx-x64/*.csproj; do
             echo "Packing $proj..."
             dotnet pack "$proj" -o out
           done
+
+          dotnet nuget add source "$(pwd)/out" --name local-out
+
+          echo "Packing meta-package..."
+          dotnet pack nuget/meta/*.csproj -o out
+
           echo "Packages created:"
           ls -la out/*.nupkg
 
