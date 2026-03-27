@@ -1,0 +1,57 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    Copies CEF native files to the output directory.
+    The runtime identifier determines which platform files are copied.
+  -->
+
+  <PropertyGroup>
+    <_RnwNativeDir>$(MSBuildThisFileDirectory)..\runtimes\</_RnwNativeDir>
+  </PropertyGroup>
+
+  <!-- Windows x64 -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' Or ('$(RuntimeIdentifier)' == '' And '$([MSBuild]::IsOSPlatform(Windows))' == 'true')">
+    <None Include="$(_RnwNativeDir)win-x64\native\**\*"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Linux x64 -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64' Or ('$(RuntimeIdentifier)' == '' And '$([MSBuild]::IsOSPlatform(Linux))' == 'true')">
+    <None Include="$(_RnwNativeDir)linux-x64\native\**\*"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- macOS: detect architecture via RuntimeIdentifier or processor arch -->
+  <PropertyGroup Condition="'$([MSBuild]::IsOSPlatform(OSX))' == 'true' And '$(RuntimeIdentifier)' == ''">
+    <_RnwMacRid Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64'">osx-arm64</_RnwMacRid>
+    <_RnwMacRid Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' != 'Arm64'">osx-x64</_RnwMacRid>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != '' And $(RuntimeIdentifier.StartsWith('osx'))">
+    <_RnwMacRid>$(RuntimeIdentifier)</_RnwMacRid>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(_RnwMacRid)' != ''">
+    <None Include="$(_RnwNativeDir)$(_RnwMacRid)\native\Chromium Embedded Framework.framework\**\*"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="..\Frameworks\Chromium Embedded Framework.framework\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(_RnwNativeDir)$(_RnwMacRid)\native\cef-helper"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="cef-helper" />
+    <None Include="$(_RnwNativeDir)$(_RnwMacRid)\native\librobust_native_webview.dylib"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="librobust_native_webview.dylib" />
+    <None Include="$(_RnwNativeDir)$(_RnwMacRid)\native\libEGL.dylib"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="libEGL.dylib" />
+    <None Include="$(_RnwNativeDir)$(_RnwMacRid)\native\libGLESv2.dylib"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="libGLESv2.dylib" />
+    <None Include="$(_RnwNativeDir)$(_RnwMacRid)\native\libvk_swiftshader.dylib"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="libvk_swiftshader.dylib" />
+    <None Include="$(_RnwNativeDir)$(_RnwMacRid)\native\vk_swiftshader_icd.json"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="vk_swiftshader_icd.json" />
+  </ItemGroup>
+</Project>

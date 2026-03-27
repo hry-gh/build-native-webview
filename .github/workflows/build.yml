@@ -1,0 +1,140 @@
+name: Build & Pack Robust.Natives.Cef
+
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  CEF_VERSION: "146.0.6"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            os: windows-latest
+            triple: x86_64-pc-windows-msvc
+            webview-lib: robust_native_webview.dll
+            helper-bin: cef-helper.exe
+          - rid: linux-x64
+            os: ubuntu-latest
+            triple: x86_64-unknown-linux-gnu
+            webview-lib: librobust_native_webview.so
+            helper-bin: cef-helper
+          - rid: osx-arm64
+            os: macos-14
+            triple: aarch64-apple-darwin
+            webview-lib: librobust_native_webview.dylib
+            helper-bin: cef-helper
+          - rid: osx-x64
+            os: macos-13
+            triple: x86_64-apple-darwin
+            webview-lib: librobust_native_webview.dylib
+            helper-bin: cef-helper
+
+    runs-on: ${{ matrix.os }}
+    name: Build ${{ matrix.rid }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout RobustToolbox
+        uses: actions/checkout@v4
+        with:
+          repository: space-wizards/RobustToolbox
+          ref: cef-rs
+          path: RobustToolbox
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.triple }}
+
+      - name: Cache cargo registry & build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            RobustToolbox/native/target
+          key: cargo-${{ matrix.rid }}-${{ hashFiles('RobustToolbox/native/Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ matrix.rid }}-
+
+      - name: Set short target dir (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: echo "CARGO_TARGET_DIR=C:/ct" >> $GITHUB_ENV
+
+      - name: Build native libraries
+        working-directory: RobustToolbox/native
+        run: |
+          cargo build --release --target ${{ matrix.triple }} -p robust-native-webview -p cef-helper
+
+      - name: Collect artifacts
+        shell: bash
+        run: |
+          python3 collect.py \
+            --rid ${{ matrix.rid }} \
+            --triple ${{ matrix.triple }} \
+            --webview-lib ${{ matrix.webview-lib }} \
+            --helper-bin ${{ matrix.helper-bin }} \
+            --target-dir ${CARGO_TARGET_DIR:-RobustToolbox/native/target}
+
+      - name: Upload platform artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-${{ matrix.rid }}
+          path: artifact/
+          retention-days: 7
+
+  pack:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Pack NuGet
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all platform artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          pattern: runtime-*
+
+      - name: Assemble runtimes directory
+        run: |
+          rm -rf nuget/runtimes
+          mkdir -p nuget/runtimes
+
+          for dir in artifacts/runtime-*; do
+            rid=$(basename "$dir" | sed 's/^runtime-//')
+            echo "Copying $rid..."
+            cp -a "$dir/$rid" "nuget/runtimes/$rid"
+          done
+
+          echo "Runtimes layout:"
+          find nuget/runtimes -maxdepth 3 -type f | head -40
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Pack NuGet package
+        working-directory: nuget
+        run: |
+          dotnet pack -o out
+          echo "Package created:"
+          ls -la out/*.nupkg
+
+      - name: Upload NuGet package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: nuget/out/*.nupkg
+          retention-days: 30
