@@ -73,12 +73,11 @@ def main():
     else:
         raise FileNotFoundError(f"{src} not found")
 
-    # Copy cef-helper, renamed to Robust.Client.WebView for launcher compatibility
+    # Copy cef-helper
     src = release_dir / args.helper_bin
     if src.exists():
-        dest_name = "Robust.Client.WebView.exe" if args.rid.startswith("win") else "Robust.Client.WebView"
-        shutil.copy2(src, out / dest_name)
-        print(f"Copied {args.helper_bin} -> {dest_name}")
+        shutil.copy2(src, out / args.helper_bin)
+        print(f"Copied {args.helper_bin}")
     else:
         raise FileNotFoundError(f"{src} not found")
 
